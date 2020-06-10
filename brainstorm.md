@@ -15,9 +15,11 @@
 - auth
 - product
 - search
-- shopping
+- order
 - inventory
 - shipping
+- notification
+- recommendation
 
 ### user
 - keep track of things user related
@@ -38,8 +40,12 @@
 - read only service allowing users to search domain objects
 - accept requests: search product, search orders, etc.
 
-### shopping
+### order
 
 ### inventory
 
 ### shipping
+
+### notification
+
+### recommendation
