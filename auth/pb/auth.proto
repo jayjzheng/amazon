@@ -1,0 +1,27 @@
+syntax = "proto3";
+package auth;
+option go_package = "pb";
+
+service AuthService {
+    rpc CreateUser (User) returns (CreateUserResponse);
+    rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+    rpc CreateToken (User) returns (CreateTokenResponse);
+}
+
+message User {
+    string login = 1;
+    string password = 2;
+}
+
+message CreateUserResponse {}
+
+message ChangePasswordRequest {
+    User user = 1;
+    string new_password = 3;
+}
+
+message ChangePasswordResponse {}
+
+message CreateTokenResponse {
+    string token = 1;
+}

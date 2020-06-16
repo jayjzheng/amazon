@@ -23,10 +23,6 @@ verifies user credentials and provides shortlived JWT.
 - passwordChanged
 - tokenCreated
 - tokenRefreshed
-- JWTkeyChanged
-
-## Subscribes
-- userUpdated
 
 ## Open Discussions
 ### datastore
@@ -34,3 +30,10 @@ verifies user credentials and provides shortlived JWT.
 
 ### programming language
 depends on the team members, experience, preferences, etc.
+
+## Usage
+### Prereq
+```brew install protobuf```
+
+### Generate Go Protobuffer code
+```protoc --go_out=. pb/auth.proto```
