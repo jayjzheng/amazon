@@ -1,0 +1,1 @@
+the `internal` package contains all the packages that are only available to this project.
