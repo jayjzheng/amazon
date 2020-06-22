@@ -49,7 +49,7 @@ func parseFlags() flags {
 	var ff flags
 
 	flag.IntVar(&ff.port, "port", 3000, "port")
-	flag.StringVar(&ff.jwtSecret, "jwt-secret", "", "jwt secret")
+	flag.StringVar(&ff.jwtSecret, "jwt-secret", "", "jwt secret, env var JWT_SECRET")
 	flag.Parse()
 
 	if ff.jwtSecret == "" {

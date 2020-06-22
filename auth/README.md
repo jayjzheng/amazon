@@ -57,3 +57,7 @@ depends on the team members, experience, preferences, etc.
 
 ### Generate Go Protobuffer code
 ```protoc --go_out=. pb/auth.proto && protoc --go-grpc_out=. ./pb/auth.proto```
+
+### Commands
+- [server](https://github.com/jayjzheng/amazon/tree/master/auth/cmd/server)
+- [client](https://github.com/jayjzheng/amazon/tree/master/auth/cmd/client)

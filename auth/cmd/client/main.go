@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 
@@ -10,8 +11,9 @@ import (
 )
 
 func main() {
-	serverAddr := "localhost:3000"
-	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
+	ff := parseFlags()
+
+	conn, err := grpc.Dial(ff.server, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("fail to dial: %v", err)
 	}
@@ -21,46 +23,46 @@ func main() {
 	ctx := context.Background()
 
 	user := pb.User{
-		Login:    "foo",
-		Password: "bar",
+		Login:    ff.login,
+		Password: ff.password,
 	}
 
-	if _, err := client.CreateUser(ctx, &user); err != nil {
-		log.Fatalln(err)
+	switch ff.action {
+	case "create":
+		_, err = client.CreateUser(ctx, &user)
+	case "change":
+		_, err = client.ChangePassword(ctx, &pb.ChangePasswordRequest{
+			User:        &user,
+			NewPassword: ff.newPassword,
+		})
+	case "token":
+		var resp *pb.CreateTokenResponse
+		resp, err = client.CreateToken(ctx, &user)
+		fmt.Printf("%+v\n", resp)
+	default:
+		log.Fatalf("unknown action: %s, 'create', 'change' or 'token'\n", ff.action)
 	}
 
-	resp, err := client.CreateToken(ctx, &user)
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Printf("%+v\n", resp)
+	fmt.Println("error", err)
+}
 
-	resp, err = client.CreateToken(ctx, &pb.User{
-		Login:    "foo",
-		Password: "barbar",
-	})
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Printf("%+v\n", resp)
+type flags struct {
+	server      string
+	login       string
+	password    string
+	newPassword string
+	action      string
+}
 
-	_, err = client.ChangePassword(ctx, &pb.ChangePasswordRequest{
-		User: &pb.User{
-			Login:    "foo",
-			Password: "bar",
-		},
-		NewPassword: "barbar",
-	})
-	if err != nil {
-		log.Println(err)
-	}
+func parseFlags() flags {
+	var ff flags
 
-	resp, err = client.CreateToken(ctx, &pb.User{
-		Login:    "foo",
-		Password: "barbar",
-	})
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Printf("changed: %+v\n", resp)
+	flag.StringVar(&ff.server, "server", "localhost:3000", "server address")
+	flag.StringVar(&ff.action, "action", "", "grpc actions, 'create', 'change', or 'token'")
+	flag.StringVar(&ff.login, "login", "", "login")
+	flag.StringVar(&ff.password, "password", "", "password")
+	flag.StringVar(&ff.newPassword, "new-pass", "", "new password")
+	flag.Parse()
+
+	return ff
 }
