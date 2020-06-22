@@ -35,13 +35,17 @@ func (s *AuthService) ChangePassword(login, old, new string) error {
 	return nil
 }
 
-func (s *AuthService) CreateToken(u *User) (string, error) {
-	u, err := s.UserStore.FindUser(u.Login)
+func (s *AuthService) CreateToken(login, password string) (string, error) {
+	u, err := s.UserStore.FindUser(login)
 	if err != nil {
 		return "", fmt.Errorf("FindUser %s: %w", u.Login, err)
 	}
 
-	if !u.Authenticate(u.Password) {
+	if u == nil {
+		return "", ErrUserNotFound
+	}
+
+	if !u.Authenticate(password) {
 		return "", ErrUnauthenticated
 	}
 

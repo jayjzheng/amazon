@@ -37,10 +37,10 @@ func (s *Auth) ChangePassword(_ context.Context, req *pb.ChangePasswordRequest) 
 }
 
 func (s *Auth) CreateToken(_ context.Context, req *pb.User) (*pb.CreateTokenResponse, error) {
-	token, err := s.Service.CreateToken(&domain.User{
-		Login:    req.GetLogin(),
-		Password: req.GetPassword(),
-	})
+	token, err := s.Service.CreateToken(
+		req.GetLogin(),
+		req.GetPassword(),
+	)
 	if err != nil {
 		return nil, err
 	}
