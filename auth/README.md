@@ -34,6 +34,8 @@ depends on the team members, experience, preferences, etc.
 ## Usage
 ### Prereq
 - ```brew install protobuf```
+- ```go get -u github.com/golang/protobuf/protoc-gen-go```
+- ```go install google.golang.org/grpc/cmd/protoc-gen-go-grpc```
 
 ### Generate Go Protobuffer code
 ```protoc --go_out=. pb/auth.proto && protoc --go-grpc_out=. ./pb/auth.proto```

@@ -19,5 +19,5 @@ func (u User) Authenticate(pass string) bool {
 type UserStore interface {
 	CreateUser(u *User) error
 	FindUser(login string) (*User, error)
-	ChangePassword(u *User, old, new string) error
+	UpdateUser(u *User) error
 }

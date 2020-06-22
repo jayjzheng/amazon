@@ -1,47 +1,42 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 
+	"github.com/jayjzheng/amazon/auth/internal/server"
 	"github.com/jayjzheng/amazon/auth/pb"
 	"google.golang.org/grpc"
 )
 
-var (
-	port int
-)
-
 func main() {
-	flag.IntVar(&port, "port", 3000, "port")
-	flag.Parse()
+	ff := parseFlags()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", ff.port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterAuthServiceServer(s, &server{})
 
-	s.Serve(lis)
+	pb.RegisterAuthServiceServer(s, &server.Auth{})
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatalln(err)
+	}
 }
 
-type server struct {
-	pb.UnimplementedAuthServiceServer
+type flags struct {
+	port int
 }
 
-func (s *server) CreateUser(context.Context, *pb.User) (*pb.CreateUserResponse, error) {
-	return nil, nil
-}
+func parseFlags() flags {
+	var ff flags
 
-func (s *server) ChangePassword(context.Context, *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
-	return nil, nil
-}
+	flag.IntVar(&ff.port, "port", 3000, "port")
+	flag.Parse()
 
-func (s *server) CreateToken(context.Context, *pb.User) (*pb.CreateTokenResponse, error) {
-	return nil, nil
+	return ff
 }
