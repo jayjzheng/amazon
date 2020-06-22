@@ -33,7 +33,7 @@ depends on the team members, experience, preferences, etc.
 
 ## Usage
 ### Prereq
-```brew install protobuf```
+- ```brew install protobuf```
 
 ### Generate Go Protobuffer code
-```protoc --go_out=. pb/auth.proto```
+```protoc --go_out=. pb/auth.proto && protoc --go-grpc_out=. ./pb/auth.proto```
