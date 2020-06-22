@@ -9,8 +9,9 @@ import (
 
 func TestAuthServiceCreateUser(t *testing.T) {
 	tests := map[string]func(*testing.T){
-		"error": testAuthServiceCreateUser_error,
-		"ok":    testAuthServiceCreateUser_ok,
+		"invalid": testAuthServiceCreateUser_invalid,
+		"error":   testAuthServiceCreateUser_error,
+		"ok":      testAuthServiceCreateUser_ok,
 	}
 
 	for name, test := range tests {
@@ -31,6 +32,18 @@ func TestAuthServiceChangePassword(t *testing.T) {
 	}
 }
 
+func testAuthServiceCreateUser_invalid(t *testing.T) {
+	m := mockUserStore{
+		CreateUserFn: func(*User) error {
+			return nil
+		},
+	}
+
+	s := AuthService{UserStore: &m}
+	err := s.CreateUser(&User{})
+	assert.True(t, errors.Is(err, ErrInvalidUser))
+}
+
 func testAuthServiceCreateUser_error(t *testing.T) {
 	someErr := errors.New("some error")
 	var invoked bool
@@ -43,7 +56,10 @@ func testAuthServiceCreateUser_error(t *testing.T) {
 	}
 
 	s := AuthService{UserStore: &m}
-	err := s.CreateUser(&User{})
+	err := s.CreateUser(&User{
+		Login:    "login",
+		Password: "password",
+	})
 
 	assert.True(t, invoked)
 	assert.Equal(t, someErr, err)
@@ -60,7 +76,10 @@ func testAuthServiceCreateUser_ok(t *testing.T) {
 	}
 
 	s := AuthService{UserStore: &m}
-	err := s.CreateUser(&User{})
+	err := s.CreateUser(&User{
+		Login:    "login",
+		Password: "password",
+	})
 
 	assert.True(t, invoked)
 	assert.Nil(t, err)

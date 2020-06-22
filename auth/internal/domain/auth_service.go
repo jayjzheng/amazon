@@ -10,6 +10,10 @@ type AuthService struct {
 }
 
 func (s *AuthService) CreateUser(u *User) error {
+	if !u.Valid() {
+		return ErrInvalidUser
+	}
+
 	return (s.UserStore.CreateUser(u))
 }
 
