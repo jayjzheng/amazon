@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package events;
+option go_package = ".;events";
+
+import "google/protobuf/timestamp.proto";
+
+message UserCreated {
+    google.protobuf.Timestamp timestamp = 1;
+    string login = 2;
+}
+
+message PasswordChanged {
+    google.protobuf.Timestamp timestamp = 1;
+    string login = 2;
+}
+
+message TokenCreated {
+    google.protobuf.Timestamp timestamp = 1;
+    string login = 2;
+}
