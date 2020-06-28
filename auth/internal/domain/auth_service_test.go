@@ -9,9 +9,9 @@ import (
 
 func TestAuthServiceCreateUser(t *testing.T) {
 	tests := map[string]func(*testing.T){
-		"invalid": testAuthServiceCreateUser_invalid,
-		"error":   testAuthServiceCreateUser_error,
-		"ok":      testAuthServiceCreateUser_ok,
+		"invalid":    testAuthServiceCreateUser_invalid,
+		"storeError": testAuthServiceCreateUser_storeError,
+		"ok":         testAuthServiceCreateUser_ok,
 	}
 
 	for name, test := range tests {
@@ -44,7 +44,7 @@ func testAuthServiceCreateUser_invalid(t *testing.T) {
 	assert.True(t, errors.Is(err, ErrInvalidUser))
 }
 
-func testAuthServiceCreateUser_error(t *testing.T) {
+func testAuthServiceCreateUser_storeError(t *testing.T) {
 	someErr := errors.New("some error")
 	var invoked bool
 
@@ -62,7 +62,7 @@ func testAuthServiceCreateUser_error(t *testing.T) {
 	})
 
 	assert.True(t, invoked)
-	assert.Equal(t, someErr, err)
+	assert.True(t, errors.Is(err, someErr))
 }
 
 func testAuthServiceCreateUser_ok(t *testing.T) {
@@ -75,7 +75,11 @@ func testAuthServiceCreateUser_ok(t *testing.T) {
 		},
 	}
 
-	s := AuthService{UserStore: &m}
+	s := AuthService{
+		UserStore: &m,
+		Publisher: &mockPublisher{},
+	}
+
 	err := s.CreateUser(&User{
 		Login:    "login",
 		Password: "password",
@@ -149,12 +153,16 @@ func testAuthServiceChangePassword_ok(t *testing.T) {
 		FindUserFn: func(string) (*User, error) {
 			return &u, nil
 		},
-		UpdateUserFn: func(*User) error {
+		UpdateUserFn: func(user *User) error {
+			u = *user
 			return nil
 		},
 	}
 
-	s := AuthService{UserStore: &m}
+	s := AuthService{
+		UserStore: &m,
+		Publisher: &mockPublisher{},
+	}
 	err := s.ChangePassword("login", "old", "new")
 
 	assert.Nil(t, err)
@@ -177,4 +185,18 @@ func (m *mockUserStore) FindUser(login string) (*User, error) {
 
 func (m *mockUserStore) UpdateUser(u *User) error {
 	return m.UpdateUserFn(u)
+}
+
+type mockPublisher struct{}
+
+func (m *mockPublisher) PublishUserCreated(u *User) error {
+	return nil
+}
+
+func (m *mockPublisher) PublishTokenCreated(u *User) error {
+	return nil
+}
+
+func (m *mockPublisher) PublishPasswordChanged(u *User) error {
+	return nil
 }

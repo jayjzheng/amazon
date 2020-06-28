@@ -23,12 +23,12 @@ func (c *Client) FindUser(login string) (*domain.User, error) {
 }
 
 func (c *Client) UpdateUser(u *domain.User) error {
-	u, err := c.FindUser(u.Login)
+	old, err := c.FindUser(u.Login)
 	if err != nil {
 		return fmt.Errorf("FindUser %s: %w", u.Login, err)
 	}
 
-	if u == nil {
+	if old == nil {
 		return domain.ErrUserNotFound
 	}
 

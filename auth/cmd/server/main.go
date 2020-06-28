@@ -30,6 +30,7 @@ func main() {
 			TokenGenerator: jwt.NewJWT(
 				jwt.WithSecret([]byte(ff.jwtSecret)),
 			),
+			Publisher: mockPublisher{},
 		},
 	}
 
@@ -57,4 +58,21 @@ func parseFlags() flags {
 	}
 
 	return ff
+}
+
+type mockPublisher struct{}
+
+func (m mockPublisher) PublishUserCreated(u *domain.User) error {
+	log.Printf("UserCreated: %+v\n", u)
+	return nil
+}
+
+func (m mockPublisher) PublishTokenCreated(u *domain.User) error {
+	log.Printf("TokenCreated: %+v\n", u)
+	return nil
+}
+
+func (m mockPublisher) PublishPasswordChanged(u *domain.User) error {
+	log.Printf("PasswordChanged: %+v\n", u)
+	return nil
 }
